@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link type="image/x-icon" href="/static/assets/img/favicon.png" rel="icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="30">
+    <title>Operations Dashboard - Ligabue Saudi Arabia Ltd.</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <style>
+        body {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            flex-direction: column; /* Align items in a column */
+        }
+        .marquee-container {
+            width: 100%;
+            overflow: hidden;
+            background-color: #f0f0f0;
+            padding: 10px 0;
+            box-sizing: border-box;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+        .marquee {
+            display: inline-block;
+            white-space: nowrap;
+            animation: marquee 30s linear infinite; /* Slowed down the speed */
+        }
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        .content-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-start;
+            width: 100%;
+            padding-top: 70px; /* Space for the marquee */
+        }
+        .chart-container {
+            width: 30%;
+            height: 40%;
+            min-width: 300px;
+            min-height: 300px;
+            margin: 10px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            box-sizing: border-box;
+            position: relative; /* Make containers relative for absolute positioning */
+            cursor: move;
+        }
+        .footer {
+            width: 100%;
+            background-color: #f0f0f0;
+            padding: 10px 20px;
+            box-sizing: border-box;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+
+<div class="marquee-container">
+    <div class="marquee">
+        {{ news }}
+    </div>
+</div>
+
+<div class="content-container">
+    <div id="Aramco IDChart" class="chart-container"></div>
+    <div id="Round TripChart" class="chart-container"></div>
+    <div id="Intranet OffshoreChart" class="chart-container"></div>
+    <div id="Intranet OnshoreChart" class="chart-container"></div>
+    <div id="Hotel 88Chart" class="chart-container"></div>
+</div>
+
+<div class="footer">
+    <div>&copy; 2024 Ligabue Saudi Arabia Ltd.</div>
+    <div id="current-time"></div>
+</div>
+
+<script type="text/javascript">
+// Load google charts
+google.charts.load('current', {'packages':['corechart']});
+google.charts.setOnLoadCallback(drawCharts);
+
+// Data from Flask
+const data = {{ data|tojson }};
+
+// Function to draw the charts
+function drawCharts() {
+    if (data.length > 0) {
+        data.forEach(item => {
+            const key = Object.keys(item)[0];
+            const chartData = item[key];
+            drawChart(key + 'Chart', chartData, key);
+        });
+    } else {
+        console.error("No data available to draw charts.");
+    }
+}
+
+// Function to draw a single chart
+function drawChart(elementId, chartData, title) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        const dataArray = [['Task', 'Count']];
+        for (const [key, value] of Object.entries(chartData)) {
+            dataArray.push([key, parseInt(value)]);
+        }
+
+        const data = google.visualization.arrayToDataTable(dataArray);
+
+        // Define custom colors for specific tasks
+        const colors = {
+            'COMPLETED': '#2CA02C', // Green
+            'REJECTED': '#D62728', // Red
+            'FINAL EXIT': '#D62728', // Red
+            'NEED TO RESCHEDULE': '#F8DE22', // Yellow
+            'AS PER PLANNED': '#1F77B4', // Blue
+            'PENDING': '#FF7F0E', // Orange
+            'ONLINE EXTENDED': '#FF7F0E', // Orange
+            'WAITING FOR BALADIYA CARD': '#FF7F0E', // Orange
+            'READY TO MOBILIZE NON SAIPEM SITE': '#1F77B4', // Blue
+            'MEDICAL DONE': '#2CA02C', // Green
+        };
+
+        const slices = {};
+        dataArray.slice(1).forEach((item, index) => {
+            const color = colors[item[0]] || '#CCCCCC'; // Default color if not specified
+            slices[index] = { color: color };
+        });
+
+        // Add a title and set the width and height of the chart
+        const options = {
+            title: title,
+            width: '100%',
+            height: '100%',
+            pieSliceText: 'value', // Show values instead of percentages
+            slices: slices
+        };
+
+        // Display the chart inside the <div> element with the specified id
+        const chart = new google.visualization.PieChart(element);
+        chart.draw(data, options);
+
+        // Make the element draggable
+        makeDraggable(element);
+    } else {
+        console.error(`Element with id ${elementId} not found.`);
+    }
+}
+
+// Function to make an element draggable
+function makeDraggable(element) {
+    let offsetX, offsetY, mouseDownX, mouseDownY;
+
+    element.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        offsetX = element.offsetLeft;
+        offsetY = element.offsetTop;
+        mouseDownX = e.clientX;
+        mouseDownY = e.clientY;
+
+        document.addEventListener('mousemove', moveElement);
+        document.addEventListener('mouseup', stopMovingElement);
+    });
+
+    function moveElement(e) {
+        element.style.left = offsetX + (e.clientX - mouseDownX) + 'px';
+        element.style.top = offsetY + (e.clientY - mouseDownY) + 'px';
+        element.style.position = 'absolute'; // Set position to absolute while moving
+    }
+
+    function stopMovingElement() {
+        document.removeEventListener('mousemove', moveElement);
+        document.removeEventListener('mouseup', stopMovingElement);
+    }
+}
+
+// Function to update the current time in KSA time zone
+function updateTime() {
+    const now = new Date();
+    const ksaTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Riyadh' }));
+    const formattedTime = ksaTime.toLocaleTimeString('en-GB', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+    });
+    document.getElementById('current-time').textContent = `Kingdom of Saudi Arabia (KSA) : ${formattedTime}`;
+}
+
+// Update the time every second
+setInterval(updateTime, 1000);
+updateTime(); // Initial call to set the time immediately
+</script>
+
+</body>
+</html>

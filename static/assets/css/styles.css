@@ -1,0 +1,134 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(45deg, rgb(80, 78, 241), rgb(173, 102, 255));
+    animation: gradientAnimation 10s infinite alternate;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  @keyframes gradientAnimation {
+    0% {
+      background-position: 0% 50%;
+    }
+    100% {
+      background-position: 100% 50%;
+    }
+  }
+  
+  .container {
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  margin: 0 auto; /* Center the container */
+
+  /* Apply styles for screens up to 768px wide (e.g., tablets and phones) */
+  @media (max-width: 768px) {
+    max-width: 80%; /* Adjust max width for smaller screens */
+    width: 75%;
+    padding: 10px; /* Adjust padding for smaller screens */
+  }
+}
+  
+  form {
+    margin-top: 20px;
+  }
+  
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  
+  .modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+      /* Apply styles for screens up to 768px wide (e.g., tablets and phones) */
+    @media (max-width: 768px) {
+      width: 80%; /* Adjust width for smaller screens */
+      padding: 10px; /* Adjust padding for smaller screens */
+    }
+
+  }
+  
+  .close {
+    float: right;
+    font-size: 24px;
+    cursor: pointer;
+  }
+  .container {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 400px; /* Limit form width for responsiveness */
+    margin: 0 auto; /* Center the container */
+  }
+  
+  header {
+    margin-bottom: 20px;
+  }
+  
+  form {
+    margin-top: 20px;
+  }
+  
+  input[type="text"] {
+    width: 80%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  
+  .footer {
+    position: fixed;
+    color: white;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0); /* Adjust the alpha value for transparency */
+    text-align: center;
+    padding: 10px;
+    border-top: 1px solid #ccc;
+  }
+
+  .checkmark {
+    color: #4caf50; /* Green color */
+    font-size: 48px;
+    margin-right: 10px; /* Add spacing between icon and header text */
+  }
+  
+  .header-section {
+    display: flex;
+    align-items: center; /* Center horizontally */
+  }
