@@ -25,4 +25,4 @@ def index():
     return render_template('index.html', data=processed_data, news=news)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
